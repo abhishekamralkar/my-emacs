@@ -34,8 +34,16 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package command-log-mode)
+(column-number-mode)
+(global-display-line-numbers-mode t)
 
+;; Disable line numbers for some mode
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(use-package command-log-mode)
 
 (use-package ivy
   :diminish
@@ -60,5 +68,41 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
-  :custom ((dooms-modeline-height 10)))
+  :custom ((dooms-modeline-height 8)))
 
+(use-package doom-themes)
+
+;; Rainbow Delimiters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; which-key
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-dely 0.1))
+
+;; ivy rich
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+;; counsel
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+	 ("C-x b" . counsel-ibuffer)
+	 ("C-x C-f" . counsel-find-file)
+	 :map minibuffer-local-map
+	 ("C-r" . 'counsel-minibuffer-history)))
+
+;; helpful
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
